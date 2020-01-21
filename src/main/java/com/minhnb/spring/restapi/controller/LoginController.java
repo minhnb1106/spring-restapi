@@ -1,11 +1,15 @@
 package com.minhnb.spring.restapi.controller;
 
+import com.minhnb.spring.restapi.constant.ResponseMessageKey;
+import com.minhnb.spring.restapi.dto.LoginDto;
+import com.minhnb.spring.restapi.dto.ResponseDto;
+import com.minhnb.spring.restapi.dto.StatusDto;
+import com.minhnb.spring.restapi.exception.ApiException;
+import com.minhnb.spring.restapi.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,22 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
+    private AccountService accountService;
 
     @PostMapping("/login")
-    public
+    public ResponseDto<String> login(@RequestBody LoginDto loginDto) throws ApiException {
 
+        String authToken = accountService.authenticateLogin(loginDto);
 
-
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
-        }
+        return new ResponseDto<String>(authToken, new StatusDto(HttpStatus.OK, ResponseMessageKey.SUCCESS));
     }
 
 }

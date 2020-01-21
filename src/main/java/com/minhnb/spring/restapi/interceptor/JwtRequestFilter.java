@@ -1,6 +1,7 @@
 package com.minhnb.spring.restapi.interceptor;
 
-import com.minhnb.spring.restapi.service.impl.UserDetailsServiceImpl;
+import com.minhnb.spring.restapi.entity.Account;
+import com.minhnb.spring.restapi.service.AccountService;
 import com.minhnb.spring.restapi.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -9,8 +10,9 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,12 +22,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    private AccountService accountService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -39,6 +42,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String jwtToken = request.getHeader(headerAuthorization);
         String username = null;
+        String companyCode = null;
 
         // JWT Token is in the form "Bearer token". Remove Bearer word and get
         // only the Token
@@ -47,6 +51,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
 
                 username = jwtUtil.getUsernameFromToken(jwtToken);
+                companyCode = jwtUtil.getCompanyCodeFromToken(jwtToken);
 
             } catch (IllegalArgumentException e) {
 
@@ -67,19 +72,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
         } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+            logger.warn("JWT Token is null!");
         }
         // Once we get the token validate it.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && companyCode != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username);
+            Account account = this.accountService.getAccountByCompanyCodeAndUsername(companyCode, username);
 
             // if token is valid configure Spring Security to manually set
             // authentication
-            if (jwtUtil.validateToken(jwtToken, userDetails)) {
+            if (jwtUtil.validateToken(jwtToken, account)) {
+
+                List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(account.getRole().name());
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        account, null, authorities);
 
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

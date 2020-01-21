@@ -1,6 +1,6 @@
 package com.minhnb.spring.restapi.config;
 
-import com.minhnb.spring.restapi.exception.JwtAuthenticationEntryPoint;
+import com.minhnb.spring.restapi.exception.handler.JwtAuthenticationEntryPoint;
 import com.minhnb.spring.restapi.interceptor.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    //    @Qualifier("userDetailsServiceImpl")
-    @Autowired
-    private UserDetailsService userDetailsServiceImpl;
+//    @Qualifier("userDetailsServiceImpl")
+//    @Autowired
+//    private UserDetailsService userDetailsServiceImpl;
 
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -35,15 +35,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
-        auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder());
-
-    }
+//    @Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//
+//        // configure AuthenticationManager so that it knows from where to load
+//        // user for matching credentials
+//        // Use BCryptPasswordEncoder
+//        auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder());
+//
+//    }
 
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

@@ -9,13 +9,13 @@ import javax.validation.constraints.Size;
 
 @Access(AccessType.FIELD)
 @Entity
-@Table(name = "account", uniqueConstraints = @UniqueConstraint(columnNames = {"user_name"}))
+@Table(name = "account")
 public class Account extends BaseEntity {
 
     @NotNull
     @Size(max = 10)
-    @Column(name = "houjin_code")
-    private String houjinCode;
+    @Column(name = "company_code")
+    private String companyCode;
 
     @NotNull
     @Size(max = 20)
@@ -37,19 +37,19 @@ public class Account extends BaseEntity {
     public Account() {
     }
 
-    public Account(String houjinCode, String userName, String password, Role role) {
-        this.houjinCode = houjinCode;
+    public Account(String companyCode, String userName, String password, Role role) {
+        this.companyCode = companyCode;
         this.userName = userName;
         this.password = password;
         this.role = role;
     }
 
-    public String getHoujinCode() {
-        return houjinCode;
+    public String getCompanyCode() {
+        return companyCode;
     }
 
-    public void setHoujinCode(String houjinCode) {
-        this.houjinCode = houjinCode;
+    public void setCompanyCode(String houjinCode) {
+        this.companyCode = houjinCode;
     }
 
     public String getUserName() {

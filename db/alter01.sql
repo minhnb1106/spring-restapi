@@ -4,9 +4,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE account
 (
-    id           UUID,
-    houjin_code  VARCHAR(10) NOT NULL,
-    user_name    VARCHAR(20) NOT NULL UNIQUE,
+    id           UUID                 DEFAULT uuid_generate_v4(),
+    company_code VARCHAR(10) NOT NULL,
+    user_name    VARCHAR(20) NOT NULL,
     password     TEXT        NOT NULL,
     role         VARCHAR(10),
     created_date timestamp   NOT NULL DEFAULT NOW(),
@@ -16,7 +16,7 @@ CREATE TABLE account
 
 CREATE TABLE payroll
 (
-    id           UUID,
+    id           UUID                DEFAULT uuid_generate_v4(),
     account_id   UUID       NOT NULL,
     year         VARCHAR(4) NOT NULL,
     month        VARCHAR(2) NOT NULL,

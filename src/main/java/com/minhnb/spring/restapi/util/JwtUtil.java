@@ -1,12 +1,12 @@
 package com.minhnb.spring.restapi.util;
 
+import com.minhnb.spring.restapi.entity.Account;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -24,6 +24,9 @@ public class JwtUtil implements Serializable {
 
     @Value("${jwt.token-validity}")
     private long tokenExpirationSecondTime;
+
+    @Value("${jwt.claims-key.company-code}")
+    private String keyCompanyCode;
 
     public String createToken(Map<String, Object> claims, String subject) {
 
@@ -57,12 +60,18 @@ public class JwtUtil implements Serializable {
         return getClaimsFromToken(token).getSubject();
     }
 
-    //validate token
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public String getCompanyCodeFromToken(String token) {
 
+        return getClaimsFromToken(token).get(keyCompanyCode, String.class);
+    }
+
+    //validate token
+    public Boolean validateToken(String token, Account account) {
+
+        String companyCode = getCompanyCodeFromToken(token);
         String username = getUsernameFromToken(token);
 
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (companyCode.equals(account.getCompanyCode()) && username.equals(account.getUserName()) && !isTokenExpired(token));
     }
 
     private static Date generateExpirationDate(Long createTime, long expirationSecondTime) {

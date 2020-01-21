@@ -34,6 +34,9 @@ dependencies {
     runtime 'io.jsonwebtoken:jjwt-impl:0.10.7',
             'io.jsonwebtoken:jjwt-jackson:0.10.7'
 
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
